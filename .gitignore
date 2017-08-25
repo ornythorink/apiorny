@@ -15,8 +15,6 @@
 !var/logs/.gitkeep
 !var/sessions/.gitkeep
 
-/.idea/*
-
 # Parameters
 /app/config/parameters.yml
 /app/config/parameters.ini
@@ -41,3 +39,5 @@
 
 # Backup entities generated with doctrine:generate:entities command
 **/Entity/*~
+
+.idea
