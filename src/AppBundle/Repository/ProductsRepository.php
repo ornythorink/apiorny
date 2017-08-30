@@ -14,6 +14,31 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
  */
 class ProductsRepository extends EntityRepository
 {
+    public function getArrayById($locale, $id)
+    {
+
+        $sql = '
+                   SELECT s.*
+                   FROM products AS s
+                   WHERE s.id = :id
+                   AND s.locale = :locale
+                   AND (s.status = "Ok" OR s.status = "Validation")
+                   ';
+
+        $params['id']  = $id;
+        $params['locale']  = $locale;
+        $stmt = $this->_em->getConnection()->prepare($sql);
+        $stmt->execute($params);
+
+
+
+        $results = $stmt->fetchAll();
+//        echo '<pre>';
+//        var_dump($results);
+//        exit;
+        return $results;
+    }
+
     public function searchProducts($term, $locale, $single = false)
     {
 
@@ -23,19 +48,18 @@ class ProductsRepository extends EntityRepository
 
         $sql = '
                   SELECT s.* ,
-                            MATCH(s.name,s.description,s.category_merchant)
+                            MATCH(s.name,s.description)
                                     AGAINST (:term) as Relevance
                    FROM products AS s
-                   WHERE status = "Ok"
+                   WHERE (status = "Ok" OR status = "Validation")
                    AND locale = :locale
-                      AND    MATCH (s.name,s.description,s.category_merchant)  AGAINST( :term2 IN  BOOLEAN MODE)
+                      AND    MATCH (s.name,s.description)  AGAINST( :term2 IN  BOOLEAN MODE)
                    ORDER BY Relevance DESC
                    LIMIT :minus , :max
 
                    ';
 
         // @todo pourquoi 2 termes ? chevrons ?
-        //var_dump($sql);
         $stmt = $this->_em->getConnection()->prepare($sql);
 
         $stmt->bindValue('term', $term1);
@@ -56,11 +80,11 @@ class ProductsRepository extends EntityRepository
         $results = $stmt->fetchAll();
 //        echo '<pre>';
 //        var_dump($results);exit;
-        foreach($results as $item)
-        {
-            $data[] = $item;
-        }
-        return $data;
+//        foreach($results as $item)
+//        {
+//            $data[] = $item;
+//        }
+        return $results;
     }
 
     public function searchSelectedProduct($term, $locale, $id)
@@ -72,20 +96,20 @@ class ProductsRepository extends EntityRepository
 
         $sql = '
                   SELECT s.* ,
-                            MATCH(s.name,s.description,s.category_merchant)
+                            MATCH(s.name,s.description)
                                     AGAINST (:term) as Relevance
                    FROM products AS s
-                   WHERE status = "Ok"
+                   WHERE (status = "Ok" OR status = "Validation")
                    AND locale = :locale
                    AND id = :id
-                      AND    MATCH (s.name,s.description,s.category_merchant)  AGAINST( :term2 IN  BOOLEAN MODE)
+                      AND    MATCH (s.name,s.description)  AGAINST( :term2 IN  BOOLEAN MODE)
                    ORDER BY Relevance DESC
                    LIMIT :minus , :max
 
                    ';
 
         // @todo pourquoi 2 termes ? chevrons ?
-        //var_dump($sql);
+
         $stmt = $this->_em->getConnection()->prepare($sql);
 
         $stmt->bindValue('term', $term1);
@@ -100,11 +124,11 @@ class ProductsRepository extends EntityRepository
         $results = $stmt->fetchAll();
 //        echo '<pre>';
 //        var_dump($results);exit;
-        foreach($results as $item)
-        {
-            $data[] = $item;
-        }
-        return $data;
+//        foreach($results as $item)
+//        {
+//            $data[] = $item;
+//        }
+        return $results;
     }
 
 
@@ -117,12 +141,12 @@ class ProductsRepository extends EntityRepository
 
         $sql = '
                   SELECT s.* ,
-                            MATCH(s.name,s.description,s.category_merchant)
+                            MATCH(s.name,s.description)
                                     AGAINST (:term) AS Relevance
                    FROM products AS s
-                   WHERE status = "Ok" OR status = "Validation"
+                   WHERE (status = "Ok" OR status = "Validation")
                    AND locale = :locale
-                      AND    MATCH (s.name,s.description,s.category_merchant)  AGAINST( :term2 IN  BOOLEAN MODE)
+                      AND    MATCH (s.name,s.description)  AGAINST( :term2 IN  BOOLEAN MODE)
                    HAVING Relevance > :thresold
                    ORDER BY Relevance DESC
                    LIMIT :minus , :max
@@ -145,10 +169,10 @@ class ProductsRepository extends EntityRepository
         $stmt->execute();
 
         $results = $stmt->fetchAll();
-        foreach ($results as $item) {
-            $data[] = $item;
-        }
-        return $data;
+//        foreach ($results as $item) {
+//            $data[] = $item;
+//        }
+        return $results;
     }
 
     public function getLeadProducts($term, $locale)
@@ -160,12 +184,12 @@ class ProductsRepository extends EntityRepository
 
         $sql = '
                   SELECT s.* ,
-                            MATCH(s.name,s.description,s.category_merchant)
+                            MATCH(s.name,s.description)
                                     AGAINST (:term) AS Relevance
                    FROM products AS s
-                   WHERE status = "Ok" OR status = "Validation"
+                   WHERE (status = "Ok" OR status = "Validation")
                    AND locale = :locale
-                      AND    MATCH (s.name,s.description,s.category_merchant)  AGAINST( :term2 IN  BOOLEAN MODE)
+                      AND    MATCH (s.name,s.description)  AGAINST( :term2 IN  BOOLEAN MODE)
                    ORDER BY Relevance DESC
                    LIMIT 0 , 1
                    ';

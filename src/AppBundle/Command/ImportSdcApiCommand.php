@@ -63,9 +63,9 @@ SQL;
 
         foreach($termsToRequest as $term)
         {
-            for($i = 1; $i <= 2; $i++)
+            for($i = 1; $i <= 10; $i++)
             {
-                sleep(2);
+                sleep(3);
                 $flux = $api->getProductFlux($term, $locale, "127.0.0.1", "firefox", $i,  800);
 
                 $converter = new SdcFluxApiConverter();
@@ -76,6 +76,7 @@ SQL;
                 $now = new \DateTime();
                 foreach($converted as $item)
                 {
+                    var_dump($i);
                     $statement->bindValue('id_api', $item['apiid'] );
                     $statement->bindValue('name', $item['name']	);
                     $statement->bindValue('price', $item['oldPrice'] );
@@ -98,7 +99,13 @@ SQL;
                     $statement->bindValue('description', $item['shortDescription'] );
                     $statement->bindValue('ean', 1);
                     $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
-                    $statement->execute();
+                    try
+                    {
+                        $statement->execute();
+                    } catch(\Exception $e) {
+                        var_dump("loupe");
+                    }
+
                 }
                 $i++;
             }

@@ -82,7 +82,7 @@ class ImportCsvCommand extends ContainerAwareCommand
 
         $data = $this->getDataFromCsvExtractor();
         $method = $this->source;
-        var_dump($data);
+
         $this->loadBlacklist();
         $this->loadWhitelist();
         $this->$method($data);

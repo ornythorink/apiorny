@@ -13,6 +13,7 @@ use AppBundle\Utils\TddFluxApiConverter;
 
 class CategorieController extends Controller
 {
+
     /**
      * @Route("{locale}/category/root", name="rootcategories")
      */
@@ -40,7 +41,7 @@ class CategorieController extends Controller
         // @todo try if category does not exists
         $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale) );
 
-        $term = $category->getTag();
+        $term = $category->getTerm();
 
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
         $products = $productsRepository->searchProducts($term, $locale);
@@ -48,21 +49,37 @@ class CategorieController extends Controller
         $formatted = [];
 
         foreach ($products as $item) {
-            $lead = $productsRepository->getLeadProducts($item['name'], $locale);
-            $relevance =  $lead[0]['Relevance'];
-            $threshold = $relevance - ($relevance* 0.1 );
 
-            $offers = $productsRepository->searchLinkedProducts($item['name'], $locale, $threshold);
-            if(count($offers) > 1)
-            {
-                $item["offers"] = $offers;
-            } else {
-                $item["offers"][] = $item;
-            }
+            $item["offers"][] = $item;
             $formatted[] = $item;
         }
-            return new JsonResponse($formatted);
+        return new JsonResponse($formatted);
     }
+
+
+    /**
+     * @Route("{locale}/linked/{id}", name="linked")
+     */
+    public function getLinkedOffers($locale, $id)
+    {
+        $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
+        $product = $productsRepository->getArrayById($locale,$id);
+        //var_dump($product);exit;
+        $lead = $productsRepository->getLeadProducts($product[0]['name'], $locale);
+        $relevance =  $lead[0]['Relevance'];
+        $threshold = $relevance - ($relevance* 0.1 );
+
+        $offers = $productsRepository->searchLinkedProducts($product[0]['name'], $locale, $threshold);
+
+           if(count($offers) > 1)
+           {
+               $product["offers"] = $offers;
+           } else {
+               $product["offers"] = $product;
+           }
+        return new JsonResponse(array($product));
+    }
+
 
     /**
      * @Route("{locale}/category/sdc/{slug}/{ip}/{agent}", name="apisdc")
@@ -75,7 +92,7 @@ class CategorieController extends Controller
 
         // @todo try if category does not exists
         $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug) );
-        $term = $category->getTag();
+        $term = $category->getTerm();
 
         $flux = $datasource->getProductFlux($term, $locale, $ip, $useragent );
 
@@ -102,7 +119,7 @@ class CategorieController extends Controller
 
         // @todo try if category does not exists
         $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug) );
-        $term = $category->getTag();
+        $term = $category->getTerm();
 
         $flux = $datasource->getProductFlux($term, $locale);
 
