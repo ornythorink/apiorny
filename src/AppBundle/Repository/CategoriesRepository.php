@@ -29,6 +29,33 @@ class CategoriesRepository extends EntityRepository
         return $results;
     }
 
+    public function findSubCategories($locale, $slug)
+    {
+        $parent = $this->findOneBy(
+            array(
+            'locale' => $locale,
+            'categoryslug' => $slug
+            )
+        );
+
+        $query = $this->_em->createQuery(
+            "
+                SELECT
+                  c1
+                FROM AppBundle\Entity\Categories c1
+
+                WHERE c1.idParent = :parent
+            "
+        );
+
+        $query->setParameter('parent', $parent->getId());
+        //$query->useQueryCache(true);
+
+        $results = $query->getResult();
+
+        return $results;
+    }
+
     public function findRootCategoriesByChildSlug($categoryslug)
     {
         $query = $this->_em->createQuery(
@@ -42,7 +69,7 @@ class CategoriesRepository extends EntityRepository
         );
 
         $query->setParameter('categoryslug', $categoryslug);
-        $query->useQueryCache(true);
+        //$query->useQueryCache(true);
 
         $results = $query->getOneOrNullResult();
 
@@ -60,7 +87,7 @@ class CategoriesRepository extends EntityRepository
                 WHERE c1.idParent = :parent
             "
         );
-        $query->useQueryCache(true);
+        //$query->useQueryCache(true);
         $query->setParameter('parent', $idParent);
         $results = $query->getResult();
 
@@ -78,7 +105,7 @@ class CategoriesRepository extends EntityRepository
                 WHERE c1.categoryslug = :slug
             "
         );
-        $query->useQueryCache(true);
+        //$query->useQueryCache(true);
         $query->setParameter('slug', $slug);
 
         $results = $query->getResult();

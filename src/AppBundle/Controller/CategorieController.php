@@ -17,9 +17,29 @@ class CategorieController extends Controller
     /**
      * @Route("{locale}/category/root", name="rootcategories")
      */
-    public function getRootCategoriesAction()
+    public function getRootCategoriesAction($locale)
     {
+        // @todo passer la locale à findRootCategories
         $categories = $this->getDoctrine()->getRepository('AppBundle:Categories')->findRootCategories();
+
+
+        $formatted = [];
+        foreach ($categories as $category) {
+            $formatted[] = [
+                'id' => $category->getId(),
+                'name_categorie' => $category->getNameCategorie(),
+                'categoryslug' => $category->getCategorySlug(),
+            ];
+        }
+        return new JsonResponse($formatted);
+    }
+
+    /**
+     * @Route("{locale}/category/sub/{slug}", name="subcat")
+     */
+    public function getSubCategoriesAction($locale, $slug)
+    {
+        $categories = $this->getDoctrine()->getRepository('AppBundle:Categories')->findSubCategories($locale ,$slug);
 
 
         $formatted = [];
