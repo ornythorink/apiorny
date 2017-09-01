@@ -21,6 +21,14 @@ class Pending
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", nullable=false)
+     *
+     */
+    private $name;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="createdat", type="datetime", nullable=false)

@@ -15,7 +15,7 @@ class ValidationCommand extends ContainerAwareCommand
     {
         $this
             ->setName('validation:run')
-            ->setDescription('Crawl un site en option ou un site de la liste');
+            ->setDescription('Valide les produits en whitelist');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -25,14 +25,14 @@ class ValidationCommand extends ContainerAwareCommand
         $batchSize = 20;
         $i = 0;
         $q = $em->createQuery(<<<TAG
-                              SELECT p.id
+                              SELECT p
                               FROM AppBundle:Products p
                               INNER JOIN  AppBundle:WhitelistCategories as w
-                              WITH p.id = w.id
+                              WITH p.categoryMerchant = w.name
                               WHERE  p.status = 'Validation'
 
 TAG
-)->setMaxResults(1000);
+        )->setMaxResults(1000);
 
         $iterableResult = $q->iterate();
         foreach ($iterableResult as $row) {
