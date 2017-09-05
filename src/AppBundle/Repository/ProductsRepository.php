@@ -51,15 +51,15 @@ class ProductsRepository extends EntityRepository
                             MATCH(s.name,s.description)
                                     AGAINST (:term) as Relevance
                    FROM products AS s
-                   WHERE (status = "Ok" OR status = "Validation")
+                   WHERE (s.status = "Ok" OR s.status = "Validation")
                    AND locale = :locale
                       AND    MATCH (s.name,s.description)  AGAINST( :term2 IN  BOOLEAN MODE)
+                   HAVING Relevance > 0
                    ORDER BY Relevance DESC
-                   LIMIT :minus , :max
-
-                   ';
+                   LIMIT :minus , :max ';
 
         // @todo pourquoi 2 termes ? chevrons ?
+
         $stmt = $this->_em->getConnection()->prepare($sql);
 
         $stmt->bindValue('term', $term1);
@@ -103,6 +103,7 @@ class ProductsRepository extends EntityRepository
                    AND locale = :locale
                    AND id = :id
                       AND    MATCH (s.name,s.description)  AGAINST( :term2 IN  BOOLEAN MODE)
+                   HAVING Relevance > 0
                    ORDER BY Relevance DESC
                    LIMIT :minus , :max
 

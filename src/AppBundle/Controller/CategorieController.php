@@ -76,6 +76,26 @@ class CategorieController extends Controller
         return new JsonResponse($formatted);
     }
 
+    /**
+     * @Route("{locale}/search/{slug}", name="search")
+     */
+    public function searchProducts($locale, $slug)
+    {
+        // @todo try if category does not exists
+
+        $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
+        $products = $productsRepository->searchProducts($slug, $locale);
+
+        $formatted = [];
+
+        foreach ($products as $item) {
+
+            $item["offers"][] = $item;
+            $formatted[] = $item;
+        }
+        return new JsonResponse($formatted);
+    }
+
 
     /**
      * @Route("{locale}/linked/{id}", name="linked")
