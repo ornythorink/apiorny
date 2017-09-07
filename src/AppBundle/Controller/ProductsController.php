@@ -32,31 +32,29 @@ class ProductsController extends Controller
     public function bySlugAction(Request $request, $locale, $slug, $id)
     {
         // @todo try if category does not exists
-        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale) );
+        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale));
 
         $term = $category->getTag();
 
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
-        $products = $productsRepository->searchSelectedProduct($term, $locale, $id);
+        $product = $productsRepository->searchSelectedProduct($term, $locale, $id);
 
         $formatted = [];
+        // @todo getOne sur le résultat de $lead
+        //var_dump($product);exit;
+        $lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
+        $relevance = $lead[0]['Relevance'];
+        $threshold = $relevance - ($relevance * 0.1);
 
-        foreach ($products as $item) {
-            // @todo getOne sur le résultat de $lead
-            $lead = $productsRepository->getLeadProducts($item['name'], $locale);
-            $relevance =  $lead[0]['Relevance'];
-            $threshold = $relevance - ($relevance* 0.1 );
-
-            $offers = $productsRepository->searchLinkedProducts($item['name'], $locale, $threshold);
-            if(count($offers) > 1)
-            {
-                $item["offers"] = $offers;
-            } else {
-                $item["offers"][] = $item;
-            }
-            $formatted[] = $item;
+        $offers = $productsRepository->searchLinkedProducts($product[0]["name"], $locale, $threshold);
+        if (count($offers) > 1) {
+            $product[0]["offers"] = $offers;
+        } else {
+            $product[0]["offers"][] = $product[0];
         }
-//        echo '<pre>';
+        $formatted['products'] = $product;
+
+
 //        var_dump($formatted);exit;
 
         return new JsonResponse($formatted);

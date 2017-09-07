@@ -67,12 +67,16 @@ class CategorieController extends Controller
         $products = $productsRepository->searchProducts($term, $locale);
 
         $formatted = [];
+        $brands = [];
 
         foreach ($products as $item) {
-
+            $brands[] = $item['brand'];
             $item["offers"][] = $item;
-            $formatted[] = $item;
+            $formatted['products'][] = $item;
         }
+
+        $formatted['metadata']['brands'] = array_unique($brands);
+
         return new JsonResponse($formatted);
     }
 
@@ -87,12 +91,16 @@ class CategorieController extends Controller
         $products = $productsRepository->searchProducts($slug, $locale);
 
         $formatted = [];
+        $brands = [];
 
         foreach ($products as $item) {
-
+            $brands[] = $item['brand'];
             $item["offers"][] = $item;
-            $formatted[] = $item;
+            $formatted['products'][] = $item;
         }
+
+        $formatted['metadata']['brands'] = array_unique($brands);
+
         return new JsonResponse($formatted);
     }
 
@@ -113,7 +121,7 @@ class CategorieController extends Controller
 
            if(count($offers) > 1)
            {
-               $product["offers"] = $offers;
+               $product["offers"] = $product + $offers;
            } else {
                $product["offers"] = $product;
            }
