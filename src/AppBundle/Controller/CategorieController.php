@@ -71,7 +71,7 @@ class CategorieController extends Controller
 
         foreach ($products as $item) {
             if ( $item['brand'] !== null &&  $item['brand'] != ""){
-                $brands[] = $item['brand'];
+                $brands[] = ucwords(strtolower($item['brand']));
             }
             $item["offers"][] = $item;
             $formatted['products'][] = $item;
@@ -97,7 +97,7 @@ class CategorieController extends Controller
 
         foreach ($products as $item) {
             if ( $item['brand'] !== null &&  $item['brand'] != ""){
-                $brands[] = $item['brand'];
+                $brands[] = ucwords(strtolower($item['brand']));
             }
 
             $item["offers"][] = $item;
