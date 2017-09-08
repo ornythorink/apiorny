@@ -48,7 +48,9 @@ class ProductsController extends Controller
 
         $offers = $productsRepository->searchLinkedProducts($product[0]["name"], $locale, $threshold);
         if (count($offers) > 1) {
+            array_unshift($offers, $product[0]);
             $product[0]["offers"] = $offers;
+
         } else {
             $product[0]["offers"][] = $product[0];
         }
