@@ -70,7 +70,9 @@ class CategorieController extends Controller
         $brands = [];
 
         foreach ($products as $item) {
-            $brands[] = $item['brand'];
+            if ( $item['brand'] !== null &&  $item['brand'] != ""){
+                $brands[] = $item['brand'];
+            }
             $item["offers"][] = $item;
             $formatted['products'][] = $item;
         }
@@ -94,7 +96,10 @@ class CategorieController extends Controller
         $brands = [];
 
         foreach ($products as $item) {
-            $brands[] = $item['brand'];
+            if ( $item['brand'] !== null &&  $item['brand'] != ""){
+                $brands[] = $item['brand'];
+            }
+
             $item["offers"][] = $item;
             $formatted['products'][] = $item;
         }
