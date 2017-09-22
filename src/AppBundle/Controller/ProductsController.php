@@ -44,7 +44,7 @@ class ProductsController extends Controller
         //var_dump($product);exit;
         $lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
         $relevance = $lead[0]['Relevance'];
-        $threshold = $relevance - ($relevance * 0.1);
+        $threshold = ($relevance * 0.9);
 
         $offers = $productsRepository->searchLinkedProducts($product[0]["name"], $locale, $threshold);
         if (count($offers) > 1) {

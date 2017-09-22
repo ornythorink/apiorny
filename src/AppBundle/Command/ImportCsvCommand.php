@@ -69,7 +69,7 @@ class ImportCsvCommand extends ContainerAwareCommand
         // @todo transaction ?
         $this->feed = $this->repoFeeds->retrieveNextCsvFeed($this->source, $this->locale);
         $this->flag();
-        // @
+
 
         $env = $this->getContainer()->get('kernel')->getEnvironment();
 
@@ -77,7 +77,7 @@ class ImportCsvCommand extends ContainerAwareCommand
             '-'. strtolower($this->source) . '-' . $env . ".csv";
 
         $this->setPathToStore($csvFile);
-
+        // @todo faire webgain  et pas assez de privileges
         $this->copyFeed();
 
         $data = $this->getDataFromCsvExtractor();
