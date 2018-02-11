@@ -3,7 +3,6 @@
 namespace AppBundle\Command;
 
 
-
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -58,11 +57,11 @@ class ImportCsvCommand extends ContainerAwareCommand
         $this->locale = $input->getArgument('locale');
         $this->source = $input->getArgument('source');
         //$this->prefix = Sources::getSourceKey($this->source,'prefix');
-        $this->em =  $this->getContainer()->get('doctrine')->getManager();
-        $this->repoFeeds = $this->em->getRepository('AppBundle:Feedcsv');
+        $this->em = $this->getContainer()->get('doctrine')->getManager();
+        $this->repoFeeds = $this->em->getRepository('AppBundle:Feedcsvsv');
 
         // si aucun feed à parcourir
-        if($this->shouldReset()) {
+        if ($this->shouldReset()) {
             $this->reset();
         }
 
@@ -73,8 +72,8 @@ class ImportCsvCommand extends ContainerAwareCommand
 
         $env = $this->getContainer()->get('kernel')->getEnvironment();
 
-        $csvFile = $this->feed->getSiteslug()  .
-            '-'. strtolower($this->source) . '-' . $env . ".csv";
+        $csvFile = $this->feed->getSiteslug() .
+            '-' . strtolower($this->source) . '-' . $env . ".csv";
 
         $this->setPathToStore($csvFile);
         // @todo faire webgain  et pas assez de privileges
@@ -99,7 +98,7 @@ class ImportCsvCommand extends ContainerAwareCommand
         $separator = $sources->getSeparator(strtoupper($this->source));
 
         /* @todo delimiter and option */
-        $data = $converter->convert($this->getPathToStore(), $separator );
+        $data = $converter->convert($this->getPathToStore(), $separator);
         return $data;
     }
 
@@ -117,8 +116,7 @@ class ImportCsvCommand extends ContainerAwareCommand
     public function shouldReset()
     {
         $flaggedActiveFeedsToProcess = $this->repoFeeds->getFeedsToProcess($this->source, $this->locale);
-        if(count($flaggedActiveFeedsToProcess) == 0)
-        {
+        if (count($flaggedActiveFeedsToProcess) == 0) {
             return true;
         }
         return false;
@@ -131,10 +129,9 @@ class ImportCsvCommand extends ContainerAwareCommand
 
     protected function copyFeed()
     {
-        try
-        {
+        try {
             $request = new \GuzzleHttp\Client();
-            $response = $request->get(trim($this->feed->getFeed() ));
+            $response = $request->get(trim($this->feed->getFeed()));
             $response = $response->getBody()->getContents();
 
             $fp = fopen($this->getPathToStore(), "wb");
@@ -142,9 +139,7 @@ class ImportCsvCommand extends ContainerAwareCommand
             fclose($fp);
 
             return true;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             // @todo  un vrai log et une action
             var_dump($e->getMessage());
             // Log the error or something
@@ -172,8 +167,7 @@ class ImportCsvCommand extends ContainerAwareCommand
     {
         $blacklistRepo = $this->em->getRepository('AppBundle:BlacklistCategories');
         $terms = $blacklistRepo->loadBlacklist($this->locale);
-        foreach($terms as $term)
-        {
+        foreach ($terms as $term) {
             $this->blacklist[$term->getName()] = 1;
         }
     }
@@ -182,15 +176,14 @@ class ImportCsvCommand extends ContainerAwareCommand
     {
         $whitelistRepo = $this->em->getRepository('AppBundle:WhitelistCategories');
         $terms = $whitelistRepo->loadWhitelist($this->locale);
-        foreach($terms as $term)
-        {
+        foreach ($terms as $term) {
             $this->whitelist[$term->getName()] = 1;
         }
     }
 
     public function insertPending($categoryName)
     {
-        if(
+        if (
             !isset(
                 $this->blacklist[$categoryName]
             )
@@ -239,36 +232,34 @@ SQL;
 SQL;
         $statement = $this->em->getConnection()->prepare($rawquery);
         $now = new \DateTime('now');
-        foreach($data as $row)
-        {
-            if(isset( $this->blacklist[$row['MerchantProductCategoryPath']] )) {
+        foreach ($data as $row) {
+            if (isset($this->blacklist[$row['MerchantProductCategoryPath']])) {
                 // @todo increment hit
                 break;
             } else { // si la categorie n'est pas dans la blacklist
-                $statement->bindValue('name', $row['ProductName']	);
+                $statement->bindValue('name', $row['ProductName']);
                 $statement->bindValue('price', $row['ProductPrice']);
-                if ($row['ProductPriceOld'] == "")
-                {
+                if ($row['ProductPriceOld'] == "") {
                     $row['ProductPriceOld'] = 0.00;
                 }
                 $statement->bindValue('promo', $row['ProductPriceOld']);
-                $statement->bindValue('url', $row['ZanoxProductLink'] );
-                $statement->bindValue('short_url', MD5($row['ZanoxProductLink']) );
-                $statement->bindValue('currency',  $row['CurrencySymbolOfPrice']);
+                $statement->bindValue('url', $row['ZanoxProductLink']);
+                $statement->bindValue('short_url', MD5($row['ZanoxProductLink']));
+                $statement->bindValue('currency', $row['CurrencySymbolOfPrice']);
                 $statement->bindValue('logostore', null);
-                $statement->bindValue('program', $row['ProductManufacturerBrand'] );
-                $statement->bindValue('status', "Validation" );
-                $statement->bindValue('brand', $row['ProductManufacturerBrand'] );
+                $statement->bindValue('program', $row['ProductManufacturerBrand']);
+                $statement->bindValue('status', "Validation");
+                $statement->bindValue('brand', $row['ProductManufacturerBrand']);
                 $statement->bindValue('image', $row['ImageSmallURL']);
-                $statement->bindValue('source_id', 'ZNX' );
+                $statement->bindValue('source_id', 'ZNX');
                 $statement->bindValue('source_type', 'CSV');
                 $statement->bindValue('actif', 'Y');
                 $statement->bindValue('locale', $this->locale);
-                $statement->bindValue('category_merchant', $row['MerchantProductCategoryPath'] );
+                $statement->bindValue('category_merchant', $row['MerchantProductCategoryPath']);
                 $statement->bindValue('createdAt', $now->format('Y-m-d H:i:s'));
                 $statement->bindValue('updateAt', $now->format('Y-m-d H:i:s'));
-                $statement->bindValue('description', $row['ProductShortDescription'] );
-                $statement->bindValue('ean', $row['ProductEAN']  );
+                $statement->bindValue('description', $row['ProductShortDescription']);
+                $statement->bindValue('ean', $row['ProductEAN']);
                 $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
                 $statement->execute();
             }
@@ -293,42 +284,39 @@ SQL;
 SQL;
         $statement = $this->em->getConnection()->prepare($rawquery);
         $now = new \DateTime('now');
-            foreach($data as $row)
-            {
-                if(isset( $this->blacklist[$row['merchantCategoryName']] ))
-                {
-                    // @todo increment hit sur la blackliste
-                } else {  // si la categorie n'est pas dans la blacklist
+        foreach ($data as $row) {
+            if (isset($this->blacklist[$row['merchantCategoryName']])) {
+                // @todo increment hit sur la blackliste
+            } else {  // si la categorie n'est pas dans la blacklist
 
-                    if ($row['previousPrice'] == "")
-                    {
-                        $row['previousPrice'] = 0.00;
-                    }
+                if ($row['previousPrice'] == "") {
+                    $row['previousPrice'] = 0.00;
+                }
 
-                    $statement->bindValue('name', $row['name']	);
-                    $statement->bindValue('price', $row['price']);
-                    $statement->bindValue('promo', $row['previousPrice']);
-                    $statement->bindValue('url', $row['productUrl'] );
-                    $statement->bindValue('short_url', MD5($row['productUrl']) );
-                    $statement->bindValue('currency',  $row['currency']);
-                    $statement->bindValue('logostore', $row['programLogoPath']);
-                    $statement->bindValue('program', $row['programName'] );
-                    $statement->bindValue('status', "Validation" );
-                    $statement->bindValue('brand', $row['brand'] );
-                    $statement->bindValue('image', $row['imageUrl']);
-                    $statement->bindValue('source_id', 'TDD' );
-                    $statement->bindValue('source_type', 'CSV');
-                    $statement->bindValue('actif', 'Y');
-                    $statement->bindValue('locale', $this->locale);
-                    $statement->bindValue('category_merchant', $row['merchantCategoryName'] );
-                    $statement->bindValue('createdAt', $now->format('Y-m-d H:i:s'));
-                    $statement->bindValue('updateAt', $now->format('Y-m-d H:i:s'));
-                    $statement->bindValue('description', $row['description'] );
-                    $statement->bindValue('ean', $row['ean']  );
-                    $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
-                    $statement->execute();
-                    }
+                $statement->bindValue('name', $row['name']);
+                $statement->bindValue('price', $row['price']);
+                $statement->bindValue('promo', $row['previousPrice']);
+                $statement->bindValue('url', $row['productUrl']);
+                $statement->bindValue('short_url', MD5($row['productUrl']));
+                $statement->bindValue('currency', $row['currency']);
+                $statement->bindValue('logostore', $row['programLogoPath']);
+                $statement->bindValue('program', $row['programName']);
+                $statement->bindValue('status', "Validation");
+                $statement->bindValue('brand', $row['brand']);
+                $statement->bindValue('image', $row['imageUrl']);
+                $statement->bindValue('source_id', 'TDD');
+                $statement->bindValue('source_type', 'CSV');
+                $statement->bindValue('actif', 'Y');
+                $statement->bindValue('locale', $this->locale);
+                $statement->bindValue('category_merchant', $row['merchantCategoryName']);
+                $statement->bindValue('createdAt', $now->format('Y-m-d H:i:s'));
+                $statement->bindValue('updateAt', $now->format('Y-m-d H:i:s'));
+                $statement->bindValue('description', $row['description']);
+                $statement->bindValue('ean', $row['ean']);
+                $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
+                $statement->execute();
             }
-
         }
+
+    }
 }

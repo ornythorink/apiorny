@@ -524,7 +524,6 @@ class Products
     }
 
 
-
     /**
      * @return string
      */

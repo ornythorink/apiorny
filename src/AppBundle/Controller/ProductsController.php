@@ -17,7 +17,7 @@ class ProductsController extends Controller
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
         $product = $productsRepository->findOneById($id);
 
-        $formatted = ['url' =>$product->getUrl()];
+        $formatted = ['url' => $product->getUrl()];
 
 //        echo '<pre>';
 //        var_dump($formatted);

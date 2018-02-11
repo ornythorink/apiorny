@@ -33,8 +33,8 @@ class CategoriesRepository extends EntityRepository
     {
         $parent = $this->findOneBy(
             array(
-            'locale' => $locale,
-            'categoryslug' => $slug
+                'locale' => $locale,
+                'categoryslug' => $slug
             )
         );
 

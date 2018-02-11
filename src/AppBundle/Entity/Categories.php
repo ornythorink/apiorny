@@ -87,7 +87,8 @@ class Categories
     private $filter;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->filter = new ArrayCollection();
     }
 
@@ -238,7 +239,8 @@ class Categories
     /**
      * @param $filter
      */
-    public function add(FilterCategories $filterCategories) {
+    public function add(FilterCategories $filterCategories)
+    {
         $filterCategories->setCategory($this);
 
         // Si l'objet fait déjà partie de la collection on ne l'ajoute pas
@@ -250,8 +252,9 @@ class Categories
     /**
      * @return ArrayCollection $filter
      */
-    public function getDepartements() {
-        return  $this->filter;
+    public function getDepartements()
+    {
+        return $this->filter;
     }
 
 }

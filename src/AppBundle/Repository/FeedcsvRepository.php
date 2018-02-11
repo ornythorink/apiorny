@@ -21,7 +21,7 @@ class FeedcsvRepository extends EntityRepository
                 SELECT
                   s
                 FROM AppBundle\Entity\Feedcsv s
-                WHERE s.source = :source
+                WHERE s.source = :SOURCE
                 AND s.flagbatched = 'N'
                 AND s.active = 'Y'
                 AND s.locale = :locale
@@ -40,7 +40,8 @@ SQL
     }
 
 
-    public function getFeedsToProcess($source, $locale){
+    public function getFeedsToProcess($source, $locale)
+    {
 
         $feedsToProcess = $this->findBy(
             array(
@@ -70,7 +71,8 @@ SQL
 
     }
 
-    public function getActiveFeeds($source, $locale){
+    public function getActiveFeeds($source, $locale)
+    {
 
         $feedsToProcess = $this->findBy(
             array(
@@ -82,7 +84,8 @@ SQL
         return $feedsToProcess;
     }
 
-    public function getInactiveFeeds($source, $locale){
+    public function getInactiveFeeds($source, $locale)
+    {
 
         $feedsToProcess = $this->findBy(
             array(
@@ -94,7 +97,8 @@ SQL
         return $feedsToProcess;
     }
 
-    public function getToPut($id){
+    public function getToPut($id)
+    {
         $query = $this->_em->createQuery(
             "
                 SELECT
@@ -115,7 +119,8 @@ SQL
      * @param $feed
      * @return $feed
      */
-    public function persistType(Feedcsv $feed) {
+    public function persistType(Feedcsv $feed)
+    {
         if ($feed->getId() !== NULL) {
             $feed = $this->_em->merge($feed);
         } else {
@@ -126,5 +131,4 @@ SQL
     }
 
 
-    
 }

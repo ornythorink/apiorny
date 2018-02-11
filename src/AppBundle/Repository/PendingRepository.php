@@ -41,8 +41,8 @@ class PendingRepository extends EntityRepository
                                 ON DUPLICATE KEY UPDATE
                                     createdAt  =  NOW() ');
 
-        $statement->bindValue('slugified_source_category', $pending->getId() );
-        $statement->bindValue('label', $pending->getLabel() );
+        $statement->bindValue('slugified_source_category', $pending->getId());
+        $statement->bindValue('label', $pending->getLabel());
 
 
         $statement->execute();

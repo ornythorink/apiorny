@@ -39,7 +39,7 @@ class CategorieController extends Controller
      */
     public function getSubCategoriesAction($locale, $slug)
     {
-        $categories = $this->getDoctrine()->getRepository('AppBundle:Categories')->findSubCategories($locale ,$slug);
+        $categories = $this->getDoctrine()->getRepository('AppBundle:Categories')->findSubCategories($locale, $slug);
 
 
         $formatted = [];
@@ -59,7 +59,7 @@ class CategorieController extends Controller
     public function getProductsByCategory($locale, $slug)
     {
         // @todo try if category does not exists
-        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale) );
+        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale));
 
         $term = $category->getTerm();
 
@@ -70,7 +70,7 @@ class CategorieController extends Controller
         $brands = [];
 
         foreach ($products as $item) {
-            if ( $item['brand'] !== null &&  $item['brand'] != ""){
+            if ($item['brand'] !== null && $item['brand'] != "") {
                 $brands[] = ucwords(strtolower($item['brand']));
             }
             $item["offers"][] = $item;
@@ -96,7 +96,7 @@ class CategorieController extends Controller
         $brands = [];
 
         foreach ($products as $item) {
-            if ( $item['brand'] !== null &&  $item['brand'] != ""){
+            if ($item['brand'] !== null && $item['brand'] != "") {
                 $brands[] = ucwords(strtolower($item['brand']));
             }
 
@@ -116,20 +116,19 @@ class CategorieController extends Controller
     public function getLinkedOffers($locale, $id)
     {
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
-        $product = $productsRepository->getArrayById($locale,$id);
+        $product = $productsRepository->getArrayById($locale, $id);
         //var_dump($product);exit;
         $lead = $productsRepository->getLeadProducts($product[0]['name'], $locale);
-        $relevance =  $lead[0]['Relevance'];
+        $relevance = $lead[0]['Relevance'];
         $threshold = ($relevance * 0.9);
 
         $offers = $productsRepository->searchLinkedProducts($product[0]['name'], $locale, $threshold);
 
-           if(count($offers) > 1)
-           {
-               $product["offers"] = $product + $offers;
-           } else {
-               $product["offers"] = $product;
-           }
+        if (count($offers) > 1) {
+            $product["offers"] = $product + $offers;
+        } else {
+            $product["offers"] = $product;
+        }
         return new JsonResponse(array($product));
     }
 
@@ -144,15 +143,15 @@ class CategorieController extends Controller
         $datasource = new SdcDataSourceApi();
 
         // @todo try if category does not exists
-        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug) );
+        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug));
         $term = $category->getTerm();
 
-        $flux = $datasource->getProductFlux($term, $locale, $ip, $useragent );
+        $flux = $datasource->getProductFlux($term, $locale, $ip, $useragent);
 
         $converter = new SdcFluxApiConverter();
         $converter->setFlux($flux);
         $converter->convertFlux();
-        $converted =$converter->getItemsArray();
+        $converted = $converter->getItemsArray();
 
         $formatted = [];
         foreach ($converted as $item) {
@@ -171,7 +170,7 @@ class CategorieController extends Controller
         $datasource = new TddDataSourceApi();
 
         // @todo try if category does not exists
-        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug) );
+        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug));
         $term = $category->getTerm();
 
         $flux = $datasource->getProductFlux($term, $locale);
@@ -179,7 +178,7 @@ class CategorieController extends Controller
         $converter = new TddFluxApiConverter();
         $converter->setFlux($flux);
         $converter->convertFlux();
-        $converted =$converter->getItemsArray();
+        $converted = $converter->getItemsArray();
 
         $formatted = [];
         foreach ($converted as $item) {

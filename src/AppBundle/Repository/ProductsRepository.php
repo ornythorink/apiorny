@@ -25,11 +25,10 @@ class ProductsRepository extends EntityRepository
                    AND (s.status = "Ok" OR s.status = "Validation")
                    ';
 
-        $params['id']  = $id;
-        $params['locale']  = $locale;
+        $params['id'] = $id;
+        $params['locale'] = $locale;
         $stmt = $this->_em->getConnection()->prepare($sql);
         $stmt->execute($params);
-
 
 
         $results = $stmt->fetchAll();
@@ -49,7 +48,7 @@ class ProductsRepository extends EntityRepository
         $sql = '
                   SELECT s.* ,
                             MATCH(s.name,s.description)
-                                    AGAINST (:term) as Relevance
+                                    AGAINST (:term) AS Relevance
                    FROM products AS s
                    WHERE (s.status = "Ok" OR s.status = "Validation")
                    AND locale = :locale
@@ -65,8 +64,7 @@ class ProductsRepository extends EntityRepository
         $stmt->bindValue('term', $term1);
         $stmt->bindValue('term2', $term2);
         $stmt->bindValue('locale', $locale);
-        if ($single === false)
-        {
+        if ($single === false) {
             $stmt->bindValue('minus', 0, \PDO::PARAM_INT);
             $stmt->bindValue('max', 100, \PDO::PARAM_INT);
         } else {
@@ -97,7 +95,7 @@ class ProductsRepository extends EntityRepository
         $sql = '
                   SELECT s.* ,
                             MATCH(s.name,s.description)
-                                    AGAINST (:term) as Relevance
+                                    AGAINST (:term) AS Relevance
                    FROM products AS s
                    WHERE (status = "Ok" OR status = "Validation")
                    AND locale = :locale
@@ -207,16 +205,16 @@ class ProductsRepository extends EntityRepository
         return $results;
     }
 
-    public function searchProductsByTag($term, $locale , $source)
+    public function searchProductsByTag($term, $locale, $source)
     {
         $data = array();
         $api = strtoupper($source);
-        $term2 = ">".implode(' >',explode(' ',$term));
+        $term2 = ">" . implode(' >', explode(' ', $term));
 
         $sql = '
                   SELECT u.* ,
                             MATCH(s.name,s.description,s.category_merchant)
-                                    AGAINST (:term) as Relevance
+                                    AGAINST (:term) AS Relevance
                    FROM FulltextProducts  AS s
                    INNER JOIN Products AS u ON s.id = u.id
                    INNER JOIN products_tags t ON u.id = t. products_id
@@ -229,16 +227,15 @@ class ProductsRepository extends EntityRepository
                    LIMIT 0 , 100
                    ';
 
-        $params['term']  = $term;
-        $params['api']   = $api;
+        $params['term'] = $term;
+        $params['api'] = $api;
         $params['term2'] = $term2;
 
         $stmt = $this->_em->getConnection()->prepare($sql);
         $stmt->execute($params);
 
         $results = $stmt->fetchAll();
-        foreach($results as $item)
-        {
+        foreach ($results as $item) {
             $data[] = $item;
         }
         return $data;
@@ -248,7 +245,7 @@ class ProductsRepository extends EntityRepository
     {
         $sourceType = 'CSV';
 
-       $sql = '
+        $sql = '
                 SELECT
                  p.*
                 FROM Products p
@@ -256,14 +253,13 @@ class ProductsRepository extends EntityRepository
                 WHERE l.product_api_id = :id
                 GROUP BY p.id_api
                 LIMIT 4   ';
-               $params['id']  = $id;
+        $params['id'] = $id;
         $stmt = $this->_em->getConnection()->prepare($sql);
         $stmt->execute($params);
 
         $rows = $stmt->fetchAll();
         $results = array();
-        foreach($rows as $row)
-        {
+        foreach ($rows as $row) {
             $results[] = Products::bulkCreate($sourceType, $row);
         }
 
@@ -282,14 +278,13 @@ class ProductsRepository extends EntityRepository
 EOL;
 
 
-        $params['tag']  = $tag;
+        $params['tag'] = $tag;
         $stmt = $this->_em->getConnection()->prepare($sql);
         $stmt->execute($params);
 
         $results = $stmt->fetchAll();
         return $results;
     }
-
 
 
     /**
@@ -300,18 +295,17 @@ EOL;
      * @param string $sortby
      * @return Paginator
      */
-    public function getPaginatedProductsToValidate($page=1, $maxperpage=10)
+    public function getPaginatedProductsToValidate($page = 1, $maxperpage = 10)
     {
         $q = $this->_em->createQueryBuilder()
             ->select('produits')
-            ->from('ProductOld.php','produits')
+            ->from('ProductOld.php', 'produits')
             ->where('produits.status = :status ')
-            ->setParameter('status' , "Validation" )
-        ;
-    
-        $q->setFirstResult(($page-1) * $maxperpage)
+            ->setParameter('status', "Validation");
+
+        $q->setFirstResult(($page - 1) * $maxperpage)
             ->setMaxResults($maxperpage);
- 
+
         return new Paginator($q);
     }
 
@@ -325,24 +319,24 @@ EOL;
                 WHERE p.imagehash = :imagehash
             "
         );*/
-/*
-        $query  = $this->_em->createQueryBuilder()
-        ->select(array('b'))
-        ->from( 'AppBundle:Products' , 'b')
-        ->where('BIT_COUNT( b.imagehash ^  :imagehash ) <= 4')
-        ->setParameter('imagehash', $hash)->getQuery();*/
+        /*
+                $query  = $this->_em->createQueryBuilder()
+                ->select(array('b'))
+                ->from( 'AppBundle:Products' , 'b')
+                ->where('BIT_COUNT( b.imagehash ^  :imagehash ) <= 4')
+                ->setParameter('imagehash', $hash)->getQuery();*/
         /* Ex�cute une requ�te pr�par�e en liant des variables PHP */
 
 
-        $prepare= $dbh->prepare("
+        $prepare = $dbh->prepare("
         SELECT *, BIT_COUNT(
-        imagehash ^ :hash ) as hamming_distance
+        imagehash ^ :hash ) AS hamming_distance
         FROM Products
         WHERE status = 'Ok'
         HAVING hamming_distance < 4
         ORDER BY hamming_distance ASC
         ");
-        $prepare->bindParam(":hash",$hash);
+        $prepare->bindParam(":hash", $hash);
         $prepare->execute();
         $results = $prepare->fetchAll();
 
@@ -364,9 +358,9 @@ EOL;
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata('AppBundle\Entity\Products', 'u');
 
-        $sql =     "SELECT description
+        $sql = "SELECT description
                     FROM Products p  LIMIT ? , ?
-                    WHERE status = 'Ok' ";
+                    WHERE STATUS = 'Ok' ";
         // 3. Run the query
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameter(1, $limit);
@@ -374,8 +368,7 @@ EOL;
 
 
         $results = $query->getArrayResult();
-        foreach($results as $item)
-        {
+        foreach ($results as $item) {
             $data[] = $item;
         }
 
@@ -402,7 +395,7 @@ SQL;
 
         $date = new \DateTime('NOW');
         $date->modify('-15 day');
-        $h48 =  $date->format('Y-m-d H:i:s');
+        $h48 = $date->format('Y-m-d H:i:s');
         $params['h48'] = $h48;
 
         $stmt->execute($params);
