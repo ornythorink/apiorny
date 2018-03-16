@@ -85,7 +85,7 @@ SQL;
 
                 $now = new \DateTime();
                 foreach ($converted as $item) {
-                    var_dump($i);
+
                     $statement->bindValue('id_api', $item['apiid']);
                     $statement->bindValue('name', $item['name']);
                     $statement->bindValue('price', $item['oldPrice']);
@@ -106,12 +106,15 @@ SQL;
                     $statement->bindValue('createdAt', $now->format('Y-m-d H:i:s'));
                     $statement->bindValue('updateAt', $now->format('Y-m-d H:i:s'));
                     $statement->bindValue('description', $item['shortDescription']);
-                    $statement->bindValue('ean', 1);
-                    $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
+                    if($item['ean'] !== null)
+                        $statement->bindValue('ean',$item['ean'] );
+                    else
+                        $statement->bindValue('ean', 'nonrenseigné');
+                        $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
                     try {
                         $statement->execute();
                     } catch (\Exception $e) {
-                        var_dump("loupe");
+                        var_dump($e->getMessage());
                     }
 
                 }

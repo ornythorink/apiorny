@@ -130,6 +130,26 @@ class ProductsRepository extends EntityRepository
         return $results;
     }
 
+    public function findByIdToArray($id)
+    {
+        $data = array();
+
+        $sql = '
+                  SELECT *
+                   FROM products
+                   WHERE id = :id
+
+                   ';
+        $stmt = $this->_em->getConnection()->prepare($sql);
+        $stmt->bindValue('id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $results = $stmt->fetchAll();
+        foreach ($results as $item) {
+            $data[] = $item;
+        }
+        return $results;
+    }
 
     public function searchLinkedProducts($term, $locale, $thresold)
     {

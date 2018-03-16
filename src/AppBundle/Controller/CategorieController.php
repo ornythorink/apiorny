@@ -59,7 +59,8 @@ class CategorieController extends Controller
     public function getProductsByCategory($locale, $slug)
     {
         // @todo try if category does not exists
-        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale));
+        $category = $this->getDoctrine()->getRepository('AppBundle:Categories')
+            ->findOneBy(array('categoryslug' => $slug, 'locale' => $locale));
 
         $term = $category->getTerm();
 

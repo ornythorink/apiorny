@@ -36,12 +36,12 @@ class SdcDataSourceApi
             "keyword" => $term,
             "numItems" => $number,
             "pageNumber" => $page,
-            "showProductOffers" => true,
             "numOffersPerProduct" => "5",
             "showProductSpecs" => "true",
             "visitorUserAgent" => $agent,
             "visitorIPAddress" => $ip,
-            "showProductsWithoutOffers" => "true"
+            "showProductsWithoutOffers" => "true",
+            "showProductSpecs" => "true"
 
         ); //183693068
 
@@ -61,7 +61,7 @@ class SdcDataSourceApi
         if (strlen($query) > 0) {
             $uri .= '?' . $query;
         }
-
+        var_dump($uri);
         $response = $this->api->get($uri);
 
         $body = $response->getBody()->getContents();

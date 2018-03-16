@@ -58,7 +58,7 @@ class ImportCsvCommand extends ContainerAwareCommand
         $this->source = $input->getArgument('source');
         //$this->prefix = Sources::getSourceKey($this->source,'prefix');
         $this->em = $this->getContainer()->get('doctrine')->getManager();
-        $this->repoFeeds = $this->em->getRepository('AppBundle:Feedcsvsv');
+        $this->repoFeeds = $this->em->getRepository('AppBundle:Feedcsv');
 
         // si aucun feed à parcourir
         if ($this->shouldReset()) {
@@ -86,7 +86,7 @@ class ImportCsvCommand extends ContainerAwareCommand
         $this->loadWhitelist();
         $this->$method($data);
 
-        unlink($csvFile);
+       // unlink($csvFile);
     }
 
     protected function getDataFromCsvExtractor()

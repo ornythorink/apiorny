@@ -21,7 +21,7 @@ class FeedcsvRepository extends EntityRepository
                 SELECT
                   s
                 FROM AppBundle\Entity\Feedcsv s
-                WHERE s.source = :SOURCE
+                WHERE s.source = :source
                 AND s.flagbatched = 'N'
                 AND s.active = 'Y'
                 AND s.locale = :locale

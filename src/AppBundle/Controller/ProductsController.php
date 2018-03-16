@@ -14,6 +14,7 @@ class ProductsController extends Controller
      */
     public function indexAction(Request $request, $locale, $id)
     {
+        // @todo $locale nonn utilisée
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
         $product = $productsRepository->findOneById($id);
 
@@ -39,21 +40,22 @@ class ProductsController extends Controller
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
         $product = $productsRepository->searchSelectedProduct($term, $locale, $id);
 
-        $formatted = [];
+        $formatted['products'] = $product;
+
         // @todo getOne sur le résultat de $lead
-        //var_dump($product);exit;
-        $lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
+        /*$lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
         $relevance = $lead[0]['Relevance'];
         $threshold = ($relevance * 0.9);
 
         $offers = $productsRepository->searchLinkedProducts($product[0]["name"], $locale, $threshold);
         if (count($offers) > 1) {
             array_unshift($offers, $product[0]);
-            $product[0]["offers"] = $offers;
+           $product[0]["offers"] = $offers;
 
         } else {
-            $product[0]["offers"][] = $product[0];
-        }
+           $product[0]["offers"][] = $product[0];
+        }*/
+        $product[0]["offers"][] = $product[0];
         $formatted['products'] = $product;
 
 
@@ -62,5 +64,33 @@ class ProductsController extends Controller
         return new JsonResponse($formatted);
     }
 
+    /**
+     * @Route("{locale}/product/search/id/{id}", name="productbysearch")
+     */
+    public function bySearchAction(Request $request, $locale, $id)
+    {
+        // @todo try if category does not exists
+
+        $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
+        $product = $productsRepository->findByIdToArray($id);
+
+        $product[0]["offers"][] = $product[0];
+        $formatted['products'] = $product[0];
+
+        /*$lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
+        $relevance = $lead[0]['Relevance'];
+        $threshold = ($relevance * 0.9);
+
+        $offers = $productsRepository->searchLinkedProducts($product[0]["name"], $locale, $threshold);
+        if (count($offers) > 1) {
+            array_unshift($offers, $product[0]);
+           $product[0]["offers"] = $offers;
+
+        } else {
+           $product[0]["offers"][] = $product[0];
+        }*/
+
+        return new JsonResponse($formatted);
+    }
 
 }
