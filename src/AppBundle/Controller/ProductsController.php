@@ -28,9 +28,9 @@ class ProductsController extends Controller
     }
 
     /**
-     * @Route("{locale}/product/slug/{slug}/id/{id}", name="productbyslug")
+     * @Route("{locale}/product/slug/{slug}/genre/{genre}", name="productbyslug")
      */
-    public function bySlugAction(Request $request, $locale, $slug, $id)
+    public function bySlugAction(Request $request, $locale, $slug, $genre)
     {
         // @todo try if category does not exists
         $category = $this->getDoctrine()->getRepository('AppBundle:Categories')->findOneBy(array('categoryslug' => $slug, 'locale' => $locale));
@@ -38,7 +38,7 @@ class ProductsController extends Controller
         $term = $category->getTag();
 
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
-        $product = $productsRepository->searchSelectedProduct($term, $locale, $id);
+        $product = $productsRepository->searchSelectedProduct($term, $locale, $genre);
 
         $formatted['products'] = $product;
 
@@ -65,14 +65,14 @@ class ProductsController extends Controller
     }
 
     /**
-     * @Route("{locale}/product/search/id/{id}", name="productbysearch")
+     * @Route("{locale}/product/search/genre/{genre}/query{$query}", name="productbysearch")
      */
-    public function bySearchAction(Request $request, $locale, $id)
+    public function bySearchAction(Request $request, $locale)
     {
         // @todo try if category does not exists
 
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
-        $product = $productsRepository->findByIdToArray($id);
+        $product = $productsRepository->searchProducts($id);
 
         $product[0]["offers"][] = $product[0];
         $formatted['products'] = $product[0];

@@ -123,6 +123,14 @@ class Products
     /**
      * @var string
      *
+     * @ORM\Column(name="hit", type="integer", length=3, nullable=true)
+     */
+    private $hit;
+
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="locale", type="string", length=2, nullable=false)
      */
     private $locale;
