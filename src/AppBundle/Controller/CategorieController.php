@@ -58,6 +58,7 @@ class CategorieController extends Controller
      */
     public function getProductsByCategory($locale, $slug)
     {
+
         // @todo try if category does not exists
         $category = $this->getDoctrine()->getRepository('AppBundle:Categories')
             ->findOneBy(array('categoryslug' => $slug, 'locale' => $locale));
@@ -83,10 +84,8 @@ class CategorieController extends Controller
         return new JsonResponse($formatted);
     }
 
-    /**
-     * @Route("{locale}/search/{slug}", name="search")
-     */
-    public function searchProducts($locale, $slug)
+
+   /* public function searchProducts($locale, $slug)
     {
         // @todo try if category does not exists
 
@@ -108,7 +107,7 @@ class CategorieController extends Controller
         $formatted['metadata']['brands'] = array_unique($brands);
 
         return new JsonResponse($formatted);
-    }
+    }*/
 
 
     /**

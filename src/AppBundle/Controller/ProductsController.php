@@ -65,17 +65,26 @@ class ProductsController extends Controller
     }
 
     /**
-     * @Route("{locale}/product/search/genre/{genre}/query{$query}", name="productbysearch")
+     * @Route("{locale}/search/", name="pbysearch")
+     * @
      */
     public function bySearchAction(Request $request, $locale)
     {
+        $query = $request->query->get('query');
+        $genre = $request->query->get('genre');
         // @todo try if category does not exists
 
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
-        $product = $productsRepository->searchProducts($id);
 
-        $product[0]["offers"][] = $product[0];
-        $formatted['products'] = $product[0];
+        $product = $productsRepository->searchProducts($query , $locale);
+
+        foreach ($product as $item) {
+            if ($item['brand'] !== null && $item['brand'] != "") {
+                $brands[] = ucwords(strtolower($item['brand']));
+            }
+            $item["offers"][] = $item;
+            $formatted['products'][] = $item;
+        }
 
         /*$lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
         $relevance = $lead[0]['Relevance'];
