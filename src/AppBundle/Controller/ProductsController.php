@@ -65,6 +65,24 @@ class ProductsController extends Controller
     }
 
     /**
+     * @Route("{locale}/product/hits/", name="hits")
+     * @
+     */
+    public function getMostHited(Request $request, $locale)
+    {
+        $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
+
+        $product = $productsRepository->getMostHited($locale);
+
+        foreach ($product as $item) {
+            $formatted['products'][] = $item;
+        }
+
+        return new JsonResponse($formatted);
+    }
+
+
+    /**
      * @Route("{locale}/search/", name="pbysearch")
      * @
      */
@@ -77,7 +95,7 @@ class ProductsController extends Controller
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
 
         $product = $productsRepository->searchProducts($query , $locale);
-
+        $formatted = array();
         foreach ($product as $item) {
             if ($item['brand'] !== null && $item['brand'] != "") {
                 $brands[] = ucwords(strtolower($item['brand']));
@@ -85,19 +103,6 @@ class ProductsController extends Controller
             $item["offers"][] = $item;
             $formatted['products'][] = $item;
         }
-
-        /*$lead = $productsRepository->getLeadProducts($product[0]["name"], $locale);
-        $relevance = $lead[0]['Relevance'];
-        $threshold = ($relevance * 0.9);
-
-        $offers = $productsRepository->searchLinkedProducts($product[0]["name"], $locale, $threshold);
-        if (count($offers) > 1) {
-            array_unshift($offers, $product[0]);
-           $product[0]["offers"] = $offers;
-
-        } else {
-           $product[0]["offers"][] = $product[0];
-        }*/
 
         return new JsonResponse($formatted);
     }

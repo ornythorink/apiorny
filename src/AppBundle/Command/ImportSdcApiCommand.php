@@ -61,11 +61,11 @@ class ImportSdcApiCommand extends ContainerAwareCommand
         $rawquery = <<<SQL
         INSERT INTO `shoes`.`products`
                 ( id_api, `name`, `price`, `promo`,`url`, `short_url`, `currency`,`logostore`,
-                 `program`, `status`,  `brand`, `image`, `source_id`, `source_type`,  `actif`, `locale`,
+                 `program`, `status`,  `brand`, `image`, bigimage, `source_id`, `source_type`,  `actif`, `locale`,
                   `category_merchant`,  `createdAt`, `updateAt`, `description`, `ean` )
                 VALUES  (
                 :id_api, :name,  :price, :promo ,:url, :short_url, :currency, :logostore,
-                :program , :status, :brand ,:image, :source_id, :source_type, :actif,
+                :program , :status, :brand ,:image, :bigimage , :source_id, :source_type, :actif,
                 :locale, :category_merchant, :createdAt, :updateAt, :description,
                 :ean
                 )
@@ -84,8 +84,9 @@ SQL;
                 $converted = $converter->getItemsArray();
 
                 $now = new \DateTime();
-                foreach ($converted as $item) {
 
+                foreach ($converted as $item) {
+                    var_dump($item);exit;
                     $statement->bindValue('id_api', $item['apiid']);
                     $statement->bindValue('name', $item['name']);
                     $statement->bindValue('price', $item['oldPrice']);
@@ -98,6 +99,7 @@ SQL;
                     $statement->bindValue('status', $item['status']);
                     $statement->bindValue('brand', $item['brand']);
                     $statement->bindValue('image', $item['image']);
+                    $statement->bindValue('bigimage', $item['bigimage']);
                     $statement->bindValue('source_id', $item['sourceId']);
                     $statement->bindValue('source_type', $item['source_type']);
                     $statement->bindValue('actif', 'Y');

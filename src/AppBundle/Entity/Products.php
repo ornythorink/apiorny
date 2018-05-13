@@ -102,6 +102,13 @@ class Products
     /**
      * @var string
      *
+     * @ORM\Column(name="bigimage", type="text", nullable=true)
+     */
+    private $bigimage;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="source_id", type="string", length=255, nullable=false)
      */
     private $sourceId;
@@ -353,6 +360,38 @@ class Products
     public function setImage($image)
     {
         $this->image = $image;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBigimage()
+    {
+        return $this->bigimage;
+    }
+
+    /**
+     * @param string $bigimage
+     */
+    public function setBigimage($bigimage)
+    {
+        $this->bigimage = $bigimage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHit()
+    {
+        return $this->hit;
+    }
+
+    /**
+     * @param string $hit
+     */
+    public function setHit($hit)
+    {
+        $this->hit = $hit;
     }
 
     /**

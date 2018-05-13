@@ -21,9 +21,10 @@ class SdcFluxApiConverter
 
         if (iterator_count($filter) > 1) {
             foreach ($filter as $key => $content) {
-                //var_dump($crawler->filter('imageList > image[available="true"] > sourceURL')->last()->text());
+
                 $crawler = new Crawler($content);
                 $datetime = new \DateTime('NOW');
+
                 $item['apiid'] = ($crawler->filter('name')->count() >= 1) ? $crawler->filter('offer')->attr('id') : null;
                 $item['price'] = ($crawler->filter('offer > basePrice')->count() >= 1) ? $crawler->filter('offer > basePrice')->text() : null;
                 $item['name'] = ($crawler->filter('name')->count() >= 1) ? utf8_decode($crawler->filter('name')->text()) : null;
@@ -36,6 +37,12 @@ class SdcFluxApiConverter
 
                 if ($item['image'] === null) {
                     $item['image'] = ($crawler->filter('imageList > image[available="true"] > sourceURL')->count() >= 1) ? $crawler->filter('imageList > image[available="true"]  > sourceURL')->text() : null;
+                }
+
+                $item['bigimage'] = ($crawler->filter('imageList > image[available="true"]')->count() >= 3) ? $crawler->filter('imageList > image[available="true"]')->text() : null;
+
+                if ($item['bigimage'] === null) {
+                    $item['bigimage'] = ($crawler->filter('imageList > image[available="true"] > sourceURL')->count() >= 3) ? $crawler->filter('imageList > image[available="true"]  > sourceURL')->text() : null;
                 }
 
                 $item['brand'] = ($crawler->filter('manufacturer')->count() >= 1) ? $crawler->filter('manufacturer')->text() : null;

@@ -54,6 +54,19 @@ class CategorieController extends Controller
     }
 
     /**
+     * @Route("{locale}/category/breadcrump/{slug}", name="breadcrump")
+     */
+    public function getBreadcrumpCategories($locale, $slug)
+    {
+        $breadcrump = $this->getDoctrine()->getRepository('AppBundle:Categories')->getBreadCrump($locale, $slug);
+        $formatted = $breadcrump;
+
+        //var_dump($formatted); exit;
+        return new JsonResponse($formatted);
+    }
+
+
+    /**
      * @Route("{locale}/category/products/{slug}", name="apisdccategory")
      */
     public function getProductsByCategory($locale, $slug)

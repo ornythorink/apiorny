@@ -38,6 +38,25 @@ class ProductsRepository extends EntityRepository
         return $results;
     }
 
+    public function getMostHited($locale)
+    {
+        $sql = <<<EOL
+                SELECT
+                  *
+                FROM products p
+                WHERE source_id = 'SDC'
+                ORDER BY hit DESC
+                LIMIT 0,3
+EOL;
+
+
+        $stmt = $this->_em->getConnection()->prepare($sql);
+        $stmt->execute();
+
+        $results = $stmt->fetchAll();
+        return $results;
+    }
+
     public function searchProducts($term, $locale, $single = false)
     {
 

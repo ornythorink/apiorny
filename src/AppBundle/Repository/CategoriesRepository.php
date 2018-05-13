@@ -94,23 +94,52 @@ class CategoriesRepository extends EntityRepository
         return $results;
     }
 
-    public function getBreadCrump($slug)
+    public function getBreadCrump($locale, $slug)
     {
-        $query = $this->_em->createQuery(
-            "
+        $sql = <<<EOL
                 SELECT
-                  c1 , c2.nameCategorie AS parent
-                FROM AppBundle\Entity\Categories c1
-                INNER JOIN AppBundle\Entity\Categories c2 WITH c1.idParent = c2.id
+                c1.*
+                FROM categories c1
                 WHERE c1.categoryslug = :slug
-            "
-        );
-        //$query->useQueryCache(true);
-        $query->setParameter('slug', $slug);
+EOL;
 
-        $results = $query->getResult();
+        $breadcrump = [];
+        $params['slug'] = $slug;
+        $stmt = $this->_em->getConnection()->prepare($sql);
+        $stmt->execute($params);
 
-        return $results;
+        $results = $stmt->fetch();
+
+        if($results['id_parent'] != '0'){
+
+            $sql = <<<EOL
+                SELECT
+                c1.*
+                FROM categories c1
+                WHERE c1.id = :id
+EOL;
+
+            $param['id'] = $results['id_parent'];
+
+            $stmt = $this->_em->getConnection()->prepare($sql);
+            $stmt->execute($param);
+            $result = $stmt->fetch();
+            $breadcrump[] = array('name_category' => $results['tag'],
+                                   'categoryslug' => $results['categoryslug'] );
+
+            $breadcrump[] = array('name_category' => $result['tag'],
+                                    'categoryslug' => $result['categoryslug'] );
+
+            $breadcrump[] = array('name_category' => 'Chaussures et bottes',
+                'categoryslug' => '/' );
+
+        } else {
+            $breadcrump[] = array('name_category' => $results['tag'],
+                'categoryslug' => $results['categoryslug'] );
+            $breadcrump[] = array('name_category' => 'Chaussures et bottes',
+                'categoryslug' => '/' );
+        }
+        return array_reverse($breadcrump);
     }
 
 }

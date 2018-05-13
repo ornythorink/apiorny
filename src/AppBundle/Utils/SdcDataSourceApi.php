@@ -58,10 +58,10 @@ class SdcDataSourceApi
 
         $query = http_build_query($parameters, '', '&');
 
-        if (strlen($query) > 0) {
+        if (strlen($uri) > 0) {
             $uri .= '?' . $query;
         }
-        var_dump($uri);
+
         $response = $this->api->get($uri);
 
         $body = $response->getBody()->getContents();
