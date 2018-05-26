@@ -10,10 +10,31 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ProductsController extends Controller
 {
     /**
-     * @Route("{locale}/products/{id}", name="productbyId")
+     * @Route("{locale}/product/full/{id}", name="productbyId")
      */
-    public function indexAction(Request $request, $locale, $id)
+    public function getByIdAction(Request $request, $locale, $id)
     {
+        // @todo $locale nonn utilisée
+        $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
+        $product = $productsRepository->getArrayById($locale, $id);
+
+
+//        echo '<pre>';
+//        var_dump($formatted);
+//        echo '</pre>';
+//        exit;
+
+        return new JsonResponse($product);
+    }
+
+
+    /**
+     * @Route("{locale}/product/{id}", name="urlproductbyId")
+     */
+    public function getUrlByIdAction(Request $request, $locale, $id)
+    {
+        // @todo utiliser plutôt la fonction du dessus qu'une autre url
+
         // @todo $locale nonn utilisée
         $productsRepository = $this->getDoctrine()->getRepository('AppBundle:Products');
         $product = $productsRepository->findOneById($id);
@@ -65,7 +86,7 @@ class ProductsController extends Controller
     }
 
     /**
-     * @Route("{locale}/product/hits/", name="hits")
+     * @Route("{locale}/hits", name="hits")
      * @
      */
     public function getMostHited(Request $request, $locale)
