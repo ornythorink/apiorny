@@ -86,7 +86,7 @@ SQL;
                 $now = new \DateTime();
 
                 foreach ($converted as $item) {
-                    var_dump($item);exit;
+
                     $statement->bindValue('id_api', $item['apiid']);
                     $statement->bindValue('name', $item['name']);
                     $statement->bindValue('price', $item['oldPrice']);
@@ -112,7 +112,8 @@ SQL;
                         $statement->bindValue('ean',$item['ean'] );
                     else
                         $statement->bindValue('ean', 'nonrenseigné');
-                        $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
+
+                    $statement->bindValue('now', $now->format('Y-m-d H:i:s'));
                     try {
                         $statement->execute();
                     } catch (\Exception $e) {

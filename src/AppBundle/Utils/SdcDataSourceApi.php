@@ -36,7 +36,7 @@ class SdcDataSourceApi
             "keyword" => $term,
             "numItems" => $number,
             "pageNumber" => $page,
-            "numOffersPerProduct" => "5",
+            "numOffersPerProduct" => 5,
             "showProductSpecs" => "true",
             "visitorUserAgent" => $agent,
             "visitorIPAddress" => $ip,
