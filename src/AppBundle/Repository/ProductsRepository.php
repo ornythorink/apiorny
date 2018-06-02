@@ -44,13 +44,16 @@ class ProductsRepository extends EntityRepository
                 SELECT
                   *
                 FROM products p
-
+                WHERE source_id = 'ZNX'
+                AND locale = :locale
+                AND status = 'Ok'
                 ORDER BY hit DESC
                 LIMIT 0,6
 EOL;
 
 
         $stmt = $this->_em->getConnection()->prepare($sql);
+        $stmt->bindValue('locale', $locale);
         $stmt->execute();
 
         $results = $stmt->fetchAll();
