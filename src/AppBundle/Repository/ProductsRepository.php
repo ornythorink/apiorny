@@ -48,7 +48,7 @@ class ProductsRepository extends EntityRepository
                 AND locale = :locale
                 AND status = 'Ok'
                 ORDER BY hit DESC
-                LIMIT 0,10
+                LIMIT 0,6
 EOL;
 
 
