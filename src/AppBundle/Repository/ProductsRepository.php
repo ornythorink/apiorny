@@ -44,7 +44,7 @@ class ProductsRepository extends EntityRepository
                 SELECT
                   *
                 FROM products p
-                WHERE source_id = 'SDC'
+
                 ORDER BY hit DESC
                 LIMIT 0,6
 EOL;
