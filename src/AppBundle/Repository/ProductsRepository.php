@@ -46,7 +46,7 @@ class ProductsRepository extends EntityRepository
                 FROM products p
                 WHERE source_id = 'SDC'
                 ORDER BY hit DESC
-                LIMIT 0,3
+                LIMIT 0,6
 EOL;
 
 
