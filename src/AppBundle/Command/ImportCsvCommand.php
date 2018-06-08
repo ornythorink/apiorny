@@ -76,7 +76,7 @@ class ImportCsvCommand extends ContainerAwareCommand
             '-' . strtolower($this->source) . '-' . $env . ".csv";
 
         $this->setPathToStore($csvFile);
-        // @todo faire webgain  et pas assez de privileges
+        // @todo faire webgain  | et pas assez de privileges ? message d'erreur ?
         $this->copyFeed();
 
         $data = $this->getDataFromCsvExtractor();
