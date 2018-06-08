@@ -17,18 +17,13 @@ class StopwordsController extends Controller
     {
         $stopwords = $this->getDoctrine()
             ->getRepository('AppBundle:Stopwords')
-            ->findBy(
-                array(
-                    'locale' => $locale,
-                    'category' => $slug,
-                )
-            );
+            ->findByGeneralOrCategorySlug($locale,$slug);
 
 
         $formatted = [];
         foreach ($stopwords as $stopword) {
             $formatted[] = [
-                'stopword' => $stopword->getStopword(),
+                'stopword' => $stopword['stopword'],
             ];
         }
         return new JsonResponse($formatted);

@@ -12,5 +12,34 @@ use Doctrine\ORM\EntityRepository;
  */
 class StopwordsRepository extends EntityRepository
 {
+        public function findByGeneralOrCategorySlug($locale, $slug){
 
+            $sql =
+                'SELECT s.*
+                FROM stopwords s
+                WHERE s.locale = :locale
+                AND
+                ( s.category = :slug
+                  OR
+                  s.category = :joker)
+                ';
+
+            $params['locale'] = $locale;
+            $params['slug'] = $slug;
+            $params['joker'] = '*';
+            $stmt = $this->_em->getConnection()->prepare($sql);
+            $stmt->execute($params);
+
+
+            $results = $stmt->fetchAll();
+//        echo '<pre>';
+//        var_dump($results);
+//        exit;
+            return $results;
+
+
+            $stopwords = $query->getResult();
+
+            return $stopwords;
+        }
 }
