@@ -13,20 +13,25 @@ class StopwordsController extends Controller
     /**
      * @Route("{locale}/stopwordsbyslug/{slug}", name="stopwordsbyidcategory")
      */
-    public function getStopwordsByCategoryAction($locale, $slug)
+    public function getStopwordsByCategoryAction(Request $request, $locale, $slug)
     {
         $finder = $this->get('fos_elastica.finder.app.products');
 //        $results = $finder->find('talons');
 //
 //        echo "<pre>";
 //        var_dump($results);exit;
-        $boolQuery = new \Elastica\Query\BoolQuery();
-        $fieldQuery = new \Elastica\Query\Match();
-        $fieldQuery->setFieldQuery('name', 'talons');
-        $fieldQuery->setFieldParam('name', 'analyzer', 'my_analyzer');
-        $boolQuery->addShould($fieldQuery);
-        $data = $finder->find($boolQuery);
+//
+          $boolQuery = new \Elastica\Query\BoolQuery();
+          $boolQuery->addShould(
+                new \Elastica\Query\Term(array('name' => array('value' => 'escarpins', 'boost' => 3)))
+            );
+
+
+        $query = new \Elastica\Query\Filtered($boolQuery);
+        $data = $finder->find($query, 100 );
+        echo "<pre>";
         var_dump($data);exit;
+
         $stopwords = $this->getDoctrine()
             ->getRepository('AppBundle:Stopwords')
             ->findByGeneralOrCategorySlug($locale,$slug);
